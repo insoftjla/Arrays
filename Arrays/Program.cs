@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Channels;
 
 namespace Arrays
 {
@@ -10,7 +11,7 @@ namespace Arrays
             Stopwatch stopwatch = new Stopwatch();
             Random random = new Random();
 
-            int[] array = new int[1000];
+            int[] array = new int[10000];
             for (int i = 0; i < array.Length; i++)
             {
                 array[i] = random.Next(1000);
@@ -29,10 +30,17 @@ namespace Arrays
             stopwatch.Reset();
 
             stopwatch.Start();
+            int[] insertingSort = InsertingSort(array);
+            stopwatch.Stop();
+            Console.WriteLine("InsertingSort T = {0}ms", stopwatch.ElapsedMilliseconds);
+            stopwatch.Reset();
+            stopwatch.Start();
+
             Array.Sort(array);
             stopwatch.Stop();
             Console.WriteLine("Array.Sort T = {0}ms", stopwatch.ElapsedMilliseconds);
             stopwatch.Reset();
+            
         }
 
         private static void ArrayPrint(int[] array)
@@ -47,22 +55,18 @@ namespace Arrays
 
         private static int[] BubbleSort(int[] array)
         {
-            int[] result = new int[array.Length];
+            var result = new int[array.Length];
             Array.Copy(array, result, array.Length);
-            bool isFound = true;
+            var isFound = true;
             while (isFound)
             {
                 isFound = false;
-                for (int i = 0; i < result.Length - 1; i++)
-                {
+                for (var i = 0; i < result.Length - 1; i++)
                     if (result[i] > result[i + 1])
                     {
-                        int tmp = result[i];
-                        result[i] = result[i + 1];
-                        result[i + 1] = tmp;
+                        Swap(i, i + 1, result);
                         isFound = true;
                     }
-                }
             }
 
             return result;
@@ -70,23 +74,17 @@ namespace Arrays
 
         private static int[] SelectionSort(int[] array)
         {
-            int[] result = new int[array.Length];
+            var result = new int[array.Length];
             Array.Copy(array, result, array.Length);
 
-            for (int i = 0; i < result.Length; i++)
+            for (var i = 0; i < result.Length; i++)
             {
-                int indexMin = i;
+                var indexMin = i;
                 for (int j = i + 1; j < result.Length; j++)
-                {
                     if (result[j] < result[indexMin])
-                    {
                         indexMin = j;
-                    }
-                }
 
-                int tmp = result[i];
-                result[i] = result[indexMin];
-                result[indexMin] = tmp;
+                Swap(i, indexMin, result);
             }
 
             return result;
@@ -94,10 +92,24 @@ namespace Arrays
 
         private static int[] InsertingSort(int[] array)
         {
-            int[] result = new int[array.Length];
+            var result = new int[array.Length];
+            Array.Copy(array, result, result.Length);
+            if (result.Length < 2) return result;
 
+            for (var i = 1; i < result.Length ; i++)
+            {
+                for (var j = i; (j > 0)  && (result[j - 1] > result[j]); j--)
+                    Swap(j, j - 1, result);
+            }
 
             return result;
+        }
+
+        private static void Swap(int index1, int index2, int[] array)
+        {
+            int tmp = array[index1];
+            array[index1] = array[index2];
+            array[index2] = tmp;
         }
     }
 }
