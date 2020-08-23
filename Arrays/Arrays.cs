@@ -4,12 +4,6 @@ namespace Arrays
 {
     public static class Arrays
     {
-        public static void Sort<T>(T[] array)
-        {
-            if (array == null) throw new NullReferenceException();
-            
-            
-        }
 
         public static void BubbleSort(int[] array)
         {
@@ -39,7 +33,7 @@ namespace Arrays
             }
         }
 
-        private static void InsertingSort(int[] array)
+        public static void InsertingSort(int[] array)
         {
             for (var i = 1; i < array.Length ; i++)
             {
